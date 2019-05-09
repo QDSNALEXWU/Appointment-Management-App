@@ -23,7 +23,9 @@ export default {
 
 .logo {
     position: relative;
-    width: 30%;
+    width: 8%;
+    margin-left: 40px ; 
     margin-bottom: 40px;
+    margin-top: -110px;
 }
 </style>

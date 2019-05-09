@@ -2,9 +2,10 @@
   <div class="">
     <el-row>
       <el-col :span="5" :offset="10">
+        <el-card shadow="always">
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <el-tab-pane label="Log in" name="first">
-            <el-col >
+            <el-col>
               <el-form :model="dynamicValidateForm" ref="dynamicValidateForm">
                     <el-form-item
                       prop="email"
@@ -34,6 +35,7 @@
             <Register></Register>
           </el-tab-pane>
       </el-tabs>
+      </el-card>
     </el-col>
     </el-row>
   </div>

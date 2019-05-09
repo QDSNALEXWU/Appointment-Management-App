@@ -7,16 +7,16 @@ Vue.use(Router)
 const router = new Router({
 	routes: [{
 			path: '/',
-			name: 'Hello',
+			name: 'User',
 			component(resolve) {
-				require.ensure(['@/components/Hello.vue'], () => {
-					resolve(require('@/components/Hello.vue'));
+				require.ensure(['@/components/User.vue'], () => {
+					resolve(require('@/components/User.vue'));
 				});
 			},
-			// 设置 mata 字段，表示该字段需要验证
-			meta: {
+			// can only access after authentication
+			/*meta: {
 				requireAuth: true
-			}
+			}*/
 		},
 		{
 			path: '/login',
@@ -33,6 +33,15 @@ const router = new Router({
 			component(resolve) {
 				require.ensure(['@/components/Register.vue'], () => {
 					resolve(require('@/components/Register.vue'));
+				});
+			}
+		},
+		{
+			path: '/schedule',
+			name: 'schedule',
+			component(resolve) {
+				require.ensure(['@/components/Schedule.vue'], () => {
+					resolve(require('@/components/Schedule.vue'));
 				});
 			}
 		},

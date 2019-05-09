@@ -5,10 +5,14 @@ import App from './App'
 import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
+import 'vue-event-calendar/dist/style.css'
+import vueEventCalendar from 'vue-event-calendar'
 import axios from './axios'
 import store from './store/index.js'
 
 Vue.use(ElementUI)
+
+Vue.use(vueEventCalendar, {locale: 'en'})
 
 /* eslint-disable no-new */
 new Vue({
@@ -18,3 +22,4 @@ new Vue({
 		render: h => h(App)
 	})
 	.$mount('#app')
+

@@ -1,5 +1,6 @@
 <template lang="html">
   <div class="">
+    <el-col :span="14" :offset="5">
     <el-form :model="registerValidateForm" ref="registerValidateForm">
           <!-- Name -->
           <el-form-item
@@ -18,66 +19,94 @@
                 </el-input>
             </el-col>
           </el-form-item>
-          <!-- Address -->
-           <el-form-item
-            prop="Address"
+          <!-- Professional Type Name-->
+          <el-form-item
+            prop=""
+          >
+            <el-col :span="11">
+                <el-select class="select" 
+                    v-model="registerValidateForm.type" 
+                    placeholder="Please select professional type">
+                    <el-option label="Podiatrist" value="podiatrist"></el-option>
+                    <el-option label="Naturopath" value="naturopath"></el-option>
+                    <el-option label="Chiropractor " value="chiropractor "></el-option>
+                </el-select>
+            </el-col>
+            <el-col :span="11" :offset="2">
+                <el-select class="select" 
+                    v-model="registerValidateForm.name" 
+                    placeholder="Please select professional">
+                    <el-option label="Tom $30/h" value="tom"></el-option>
+                    <el-option label="Jake $40/h" value="jake"></el-option>
+                </el-select>
+
+            </el-col>
+          </el-form-item>
+          <el-form-item required>
+            <el-col :span="8">
+                <el-form-item prop="date">
+                <el-date-picker 
+                    type="date" 
+                    placeholder="Pick a date" 
+                    v-model="registerValidateForm.date" 
+                    style="width: 100%;">        
+                </el-date-picker>
+                </el-form-item>
+            </el-col>
+            <el-col 
+            class="timepicker"
+            :offset='1'
+            :span="7"
+            >
+                <el-time-select
+                    style="width: 100%;"
+                    placeholder="Start time"
+                    v-model="registerValidateForm.startTime"
+                    :picker-options="{
+                        start: '09:00',
+                        step: '01:00',
+                        end: '17:00'
+                    }">
+                </el-time-select>
+            </el-col>
+            <el-col 
+            class="timepicker"
+            :offset='1'
+            :span="7"
+            >
+                <el-time-select
+                    style="width: 100%;"
+                    placeholder="End time"
+                    v-model="registerValidateForm.endTime"
+                    :picker-options="{
+                        start: '09:00',
+                        step: '01:00',
+                        end: '17:00'
+                    }">
+                </el-time-select>
+            </el-col>
+          </el-form-item>
+          <el-form-item
+            prop="Name"
           >
             <el-input
-            placeholder="Home Address"
-            >   
+                type="textarea"
+                :rows="2"
+                placeholder="Optional message"
+                v-model="registerValidateForm.message">
             </el-input>
           </el-form-item>
-          <!-- Number -->
-           <el-form-item
-            prop="Number"
-          >
-            <el-input
-            placeholder="Contact Number"
-            >   
-            </el-input>
-          </el-form-item>
-          <!-- Email -->
-          <el-form-item
-            prop="email"
-            :rules="rules.email"
-          >
-            <el-input
-            placeholder="Email"
-            v-model="registerValidateForm.email">   
-            </el-input>
-          </el-form-item>
-          <!-- Passward -->
-          <el-form-item
-          prop="password"
-          :rules = "rules.password"
-          >
-            <el-input 
-                type="password"
-                placeholder="Password" 
-                v-model="registerValidateForm.password">
-            </el-input>
-          </el-form-item>
-          <el-form-item
-          prop="checkPass"
-          :rules = "rules.checkPass"
-          >
-            <el-input 
-                type="password"
-                placeholder="Confirm Password"
-                v-model="registerValidateForm.checkPass">    
-            </el-input>
-          </el-form-item>
-          <el-button type="primary" @click="submitForm('registerValidateForm')">Sign up</el-button>
+          <el-button type="primary" @click="submitForm('registerValidateForm')">Submit</el-button>
           <el-button @click="resetForm('registerValidateForm')">Reset</el-button>
     </el-form>
+    </el-col>
   </div>
 </template>
-·
 <script>
 import * as types from '../store/types'
 import api from '../axios'
 export default {
-    name: 'login',
+    name: 'hello',
     data() {
         // 密码安全性要求
         let validatePass1 = (rule, value, callback) => {
@@ -100,7 +129,13 @@ export default {
                 email: '',
                 password: '',
                 checkPass: '',
-                first: 'first'
+                first: 'first',
+                type:'',
+                name: '',
+                date: '',
+                startTime: '',
+                endTime:'',
+                message:'',
             },
             rules: {
                 email: [{
@@ -176,4 +211,13 @@ export default {
 </script>
 
 <style lang="css">
+
+.select {
+    width: 100%;
+}
+
+.timepicker {
+    display: inline-block;
+}
+
 </style>
