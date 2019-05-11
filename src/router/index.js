@@ -19,6 +19,19 @@ const router = new Router({
 			}*/
 		},
 		{
+			path: '/admin',
+			name: 'Admin',
+			component(resolve) {
+				require.ensure(['@/components/Admin.vue'], () => {
+					resolve(require('@/components/Admin.vue'));
+				});
+			},
+			// can only access after authentication
+			/*meta: {
+				requireAuth: true
+			}*/
+		},
+		{
 			path: '/login',
 			name: 'login',
 			component(resolve) {

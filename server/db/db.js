@@ -43,6 +43,12 @@ var appointmentSchema = mongoose.Schema({
 	message: String, 
 })
 
+//admin 
+var adminSchema = mongoose.Schema({
+	Email: String, // system recognizable email 
+	password: String, //default passward
+})
+
 
 var model = {
 	// 在此处扩展 model，例如：
