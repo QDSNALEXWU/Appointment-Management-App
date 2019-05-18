@@ -2,55 +2,56 @@
   <div class="">
     <el-col :span="14" :offset="5">
     <el-form :model="registerValidateForm" ref="registerValidateForm">
-          <!-- Name -->
-          <el-form-item
-            prop="Name"
-          >
-            <el-col :span="11">
-                <el-input
-                placeholder="First Name"
-                >   
-                </el-input>
-            </el-col>
-            <el-col :span="11" :offset="2">
-                <el-input
-                placeholder="Last Name"
-                >   
-                </el-input>
-            </el-col>
-          </el-form-item>
           <!-- Professional Type Name-->
-          <el-form-item
-            prop=""
-          >
+          <el-form-item>
             <el-col :span="11">
-                <el-select class="select" 
-                    v-model="registerValidateForm.type" 
-                    placeholder="Please select professional type">
-                    <el-option label="Podiatrist" value="podiatrist"></el-option>
-                    <el-option label="Naturopath" value="naturopath"></el-option>
-                    <el-option label="Chiropractor " value="chiropractor "></el-option>
-                </el-select>
+                <el-form-item
+                    prop="professionalType"
+                    :rules="rules.professionalType">
+                    <el-select class="select"
+                        @change='typeChange'
+                        v-model="registerValidateForm.professionalType" 
+                        placeholder="Please select professional type">
+                        <el-option label="Podiatrist" value="podiatrist"></el-option>
+                        <el-option label="Naturopath" value="naturopath"></el-option>
+                        <el-option label="Chiropractor " value="chiropractor "></el-option>
+                    </el-select>
+                </el-form-item>
             </el-col>
             <el-col :span="11" :offset="2">
-                <el-select class="select" 
-                    v-model="registerValidateForm.name" 
-                    placeholder="Please select professional">
-                    <el-option label="Tom $30/h" value="tom"></el-option>
-                    <el-option label="Jake $40/h" value="jake"></el-option>
-                </el-select>
-
+                <el-form-item
+                    prop="professional"
+                    :rules="rules.professional">
+                    <el-select class="select" 
+                        v-model="registerValidateForm.professional"
+                        placeholder="Please select professional">
+                            <el-option 
+                                v-for="item in professionals"
+                                :key="item.email"
+                                :label="item.first_name + ' ' + item.last_name + '  ' + item.charge +'$/hr'" 
+                                :value="item.email">   
+                            </el-option>
+                        <!--
+                        <el-option label="Tom $30/h" value="tom"></el-option>
+                        <el-option label="Jake $40/h" value="jake"></el-option>
+                        -->
+                    </el-select>
+                </el-form-item>
             </el-col>
           </el-form-item>
+
+          <!-- Date Time -->
           <el-form-item required>
             <el-col :span="8">
-                <el-form-item prop="date">
-                <el-date-picker 
-                    type="date" 
-                    placeholder="Pick a date" 
-                    v-model="registerValidateForm.date" 
-                    style="width: 100%;">        
-                </el-date-picker>
+                <el-form-item 
+                    prop="date"
+                    :rules="rules.date">
+                    <el-date-picker 
+                        type="date" 
+                        placeholder="Pick a date" 
+                        v-model="registerValidateForm.date" 
+                        style="width: 100%;">        
+                    </el-date-picker>
                 </el-form-item>
             </el-col>
             <el-col 
@@ -58,34 +59,44 @@
             :offset='1'
             :span="7"
             >
-                <el-time-select
-                    style="width: 100%;"
-                    placeholder="Start time"
-                    v-model="registerValidateForm.startTime"
-                    :picker-options="{
-                        start: '09:00',
-                        step: '01:00',
-                        end: '17:00'
-                    }">
-                </el-time-select>
+                <el-form-item
+                    prop="startTime"
+                    :rules="rules.startTime">
+                    <el-time-select
+                        style="width: 100%;"
+                        placeholder="Start time"
+                        v-model="registerValidateForm.startTime"
+                        :picker-options="{
+                            start: '09:00',
+                            step: '01:00',
+                            end: '16:00'
+                        }">
+                    </el-time-select>
+                </el-form-item>
             </el-col>
             <el-col 
             class="timepicker"
             :offset='1'
-            :span="7"
-            >
-                <el-time-select
-                    style="width: 100%;"
-                    placeholder="End time"
-                    v-model="registerValidateForm.endTime"
-                    :picker-options="{
-                        start: '09:00',
-                        step: '01:00',
-                        end: '17:00'
-                    }">
-                </el-time-select>
+            :span="7">
+                <el-form-item
+                    prop="endTime"
+                    :rules="rules.endTime">
+                    <el-time-select
+                        style="width: 100%;"
+                        placeholder="End time"
+                        v-model="registerValidateForm.endTime"
+                        :picker-options="{
+                            start: '10:00',
+                            step: '01:00',
+                            end: '17:00',
+                            minTime: registerValidateForm.startTime
+                        }">
+                    </el-time-select>
+                </el-form-item>
             </el-col>
           </el-form-item>
+
+          <!-- Optional Message -->
           <el-form-item
             prop="Name"
           >
@@ -108,93 +119,100 @@ import api from '../axios'
 export default {
     name: 'hello',
     data() {
-        // 密码安全性要求
-        let validatePass1 = (rule, value, callback) => {
-            // 6-16位, 数字, 字母, 字符至少包含两种, 同时不能包含中文和空格
-            let reg = /(?!^[0-9]+$)(?!^[A-z]+$)(?!^[^A-z0-9]+$)^[^\s\u4e00-\u9fa5]{6,16}$/;
-            if (!reg.test(value)) {
-                callback(new Error('密码长度需6-16位，且包含字母和字符'))
-            } else {
-                callback()
-            }
-        };
-        // 监测两次密码是否相同
-        let validatePass2 = (rule, value, callback) => {
-            value === '' ? callback(new Error('请再次输入密码')) :
-                value !== this.registerValidateForm.password ? callback(new Error('两次输入密码不一致!')) :
-                callback()
-        };
         return {
+            allprofessionals: [],
+            professionals: [],
             registerValidateForm: {
-                email: '',
-                password: '',
-                checkPass: '',
-                first: 'first',
-                type:'',
-                name: '',
-                date: '',
                 startTime: '',
                 endTime:'',
                 message:'',
+                professional: '',
+                date: '',
+                //charge: '',
+                //professionalType: '',
             },
             rules: {
-                email: [{
+                professionalType: [{
                         required: true,
-                        message: '请输入邮箱地址',
-                        trigger: 'blur'
+                        message: 'Please select professional type',
+                        trigger: 'change'
                     },
-                    {
-                        type: 'email',
-                        message: '请输入正确的邮箱地址',
-                        trigger: 'blur'
-                    }
                 ],
-                password: [{
+                professional: [{
                         required: true,
-                        message: '请输入密码',
-                        trigger: 'blur'
+                        message: 'Please select professional',
+                        trigger: 'change'
                     },
-                    {
-                        validator: validatePass1,
-                        trigger: 'blur'
-                    }
                 ],
-                checkPass: [{
+                date: [{
+                        type: 'date',
                         required: true,
-                        message: '请再次输入密码',
-                        trigger: 'blur'
+                        message: 'Please select a date',
+                        trigger: 'change'
                     },
-                    {
-                        validator: validatePass2,
-                        trigger: 'blur'
-                    }
-                ]
+                ],
+                startTime: [{
+                        required: true,
+                        message: 'Please select startTime',
+                        trigger: 'change'
+                    },
+                ],
+                endTime: [{
+                        required: true,
+                        message: 'Please select endTime',
+                        trigger: 'change'
+                    },
+                ],
             }
         }
     },
+    props: {
+        user:Object
+    },
+    mounted: function () {
+        api.getPros().then(({
+            data
+        }) => {
+            // load professional data
+            this.allprofessionals = data
+        }).catch((err) => {
+            console.log(err);
+        }) 
+    },
     methods: {
+        // chenge a doc type
+        typeChange(data) {
+            this.professionals = this.allprofessionals.filter(i => i.type == data.toLowerCase());
+        },
         resetForm(formName) {
             this.$refs[formName].resetFields();
         },
         submitForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                    let opt = this.registerValidateForm;
-                    api.userRegister(opt).then(({
+                    // copy object
+                    let opt = JSON.parse(JSON.stringify(this.registerValidateForm));
+                    opt.professional = 
+                        this.allprofessionals.filter(i => i.email == this.registerValidateForm.professional)[0];  
+                    // add user
+                    opt.user = this.user
+                    api.addApp(opt).then(({
                         data
                     }) => {
                         if (data.success) {
                             this.$message({
                                 type: 'success',
-                                message: `注册成功，请登录`
+                                message: `Appointment Scheduled Successfuly`
                             })
-                            //  Register 设计为了 Login 的组件，所以成功跳转时刷新一次页面
-                            this.$router.go(0)
-                            this.$router.push('/login')
+                            //  refresh page, go to calander
+                            setTimeout(() =>{ 
+                                this.$router.go(0)
+                                this.$router.push('/') 
+                            }, 1000);
                         } else {
                             this.$message({
-                                type: 'info',
-                                message: '此账户已存在'
+                                type: 'warning',
+                                message: 'system error'
                             })
                         }
                     }).catch((err) => {

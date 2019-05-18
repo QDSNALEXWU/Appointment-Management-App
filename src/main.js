@@ -9,10 +9,17 @@ import 'vue-event-calendar/dist/style.css'
 import vueEventCalendar from 'vue-event-calendar'
 import axios from './axios'
 import store from './store/index.js'
+import moment from 'moment'
 
 Vue.use(ElementUI)
 
 Vue.use(vueEventCalendar, {locale: 'en'})
+
+Vue.filter('formatDate', function(value) {
+  if (value) {
+    return moment(String(value)).format('MM/DD/YYYY')
+  }
+});
 
 /* eslint-disable no-new */
 new Vue({

@@ -1,9 +1,10 @@
 const mongoose = require('mongoose')
 const config = require('config-lite')
+const Schema = mongoose.Schema;
 
-// mongodb 连接🔗
+// mongodb connection🔗
 mongoose.connect(config.mongodb, { useMongoClient: true })
-// 此处防止 node.js - Mongoose: mpromise 错误
+//  node.js - Mongoose: mpromise
 mongoose.Promise = global.Promise;
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Connect error'))
@@ -35,12 +36,12 @@ var professionalSchema = mongoose.Schema({
 
 //appointment schema
 var appointmentSchema = mongoose.Schema({
-	userEmail: String,
-	professionalEmail: String,
 	date: Date,
 	start_time: Number, // 9 - 17
 	end_time: Number, // 9 - 17
-	message: String, 
+	message: String,
+	Professional: [{ type: Schema.Types.ObjectId, ref: 'Professional' }],
+	User: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 })
 
 //admin 
@@ -51,9 +52,10 @@ var adminSchema = mongoose.Schema({
 
 
 var model = {
-	// 在此处扩展 model，例如：
 	// Article: mongoose.model('Article', articleSchema),
-	User: mongoose.model('User', userSchema)
+	User: mongoose.model('User', userSchema),
+	Professional: mongoose.model('Professional', professionalSchema),
+	Appointment: mongoose.model('Appointment', appointmentSchema)
 }
 
 module.exports = model

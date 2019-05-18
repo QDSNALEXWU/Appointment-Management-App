@@ -8,23 +8,24 @@
                 <span slot="label">Appointments Calendar</span>
                  <vue-event-calendar
                     :title="title"
-                    :events="demoEvents">
+                    :events="appointments">
                     <template slot-scope="props">
                     <div v-for="(event, index) in props.showEvents" class="event-item">
                         <el-row class='title'>
                             <el-col :span="6">
                                 <div class="highlight">
-                                    {{event.name}}
+                                   {{event.Professional[0].first_name}}
+                                   {{event.Professional[0].last_name}}
                                 </div>
                             </el-col>
                         <el-col :offset='6' :span="6">
                             <div class="light">
-                                {{event.date}}
+                                {{event.date | formatDate }}
                             </div>
                         </el-col>
                             <el-col :span="6">
                                 <div class="light">
-                                    {{event.time}}
+                                    {{event.start_time}}:00-{{event.end_time}}:00
                                 </div>
                         </el-col>
                         </el-row>
@@ -36,7 +37,11 @@
                                 </el-col>
                             <el-col :span="6">
                                 <div class="button" >
-                                    <el-button  size="small" type="danger">Cancel</el-button>
+                                    <el-button
+                                        @click=cancelEvent(event)
+                                        size="small" 
+                                        type="danger">Cancel
+                                    </el-button>
                                 </div>
                             </el-col>    
                             </el-row>
@@ -46,10 +51,15 @@
             <!--      Schedule    -->
             </el-tab-pane>
             <el-tab-pane label="Schedule Appointment">
-                <Schedule></Schedule>
+                <Schedule :user="user[0]">
+                </Schedule>
             </el-tab-pane>
-            <el-tab-pane label="">
-                <span slot="label">Update Profile</span>
+            <!--      Update Profile    -->
+            <el-tab-pane 
+            label="">
+                <span slot="label"><i class="el-icon-setting"></i> Update Profile</span>
+                <Update :user="user[0]">
+                </Update>
             </el-tab-pane>
         </el-tabs>
     </el-col>
@@ -77,6 +87,7 @@
 import * as types from '../store/types'
 import api from '../axios'
 import Schedule from '@/components/Schedule.vue'
+import Update from '@/components/Update.vue'
 export default {
     name: 'hello',
     data() {
@@ -86,31 +97,65 @@ export default {
             username: '',
             title: "All Appointments",
             activeIndex: '1',
-            demoEvents: [{
-                date: '2016/11/12', // Required
-                time: "10-12am",
-                name: 'Tom',
-                type: 'podiatrist',
-                charge:'$30', 
-                message:'see you tmr',
-            }, {
-                date: '2016/11/15', // Required
-                time: "12-1pm",
-                name: 'Jake',
-                type: 'podiatrist',
-                charge:'$30', 
-                message:'I will be there a little bit late',
-            }]
+            appointments: [],
         }
     },
     mounted() {
+        api.getApps().then(({
+            data
+        }) => {
+            // load appointments data
+            this.appointments = data
+        }).catch((err) => {
+            console.log(err);
+        }) 
         this.get_User()
-        this.username = localStorage.getItem('username')
+        //this.username = localStorage.getItem('username')
     },
     components: {
-        Schedule
+        Schedule,
+        Update
     },
     methods: {
+        cancelEvent(key) {
+            console.log(key)
+            this.$confirm('This will cancel the appointment. Continue?', 'Warning', {
+                confirmButtonText: 'OK',
+                cancelButtonText: 'Cancel',
+                type: 'warning'
+            }).then(() => {
+                // del appointment
+                let opt = {
+                    id: key._id
+                }
+                api.delApp(opt).then(({
+                        data
+                    }) => {
+                        if (data.success) {
+                            this.$message({
+                                type: 'success',
+                                message: `Appointment Canceled`
+                            })
+                            //  refresh page, go to calander
+                            setTimeout(() =>{ 
+                                this.$router.go(0)
+                                this.$router.push('/') 
+                            }, 1000);
+                        } else {
+                            this.$message({
+                                type: 'warning',
+                                message: 'system error'
+                            })
+                        }
+                    }).catch((err) => {
+                        console.log(err);
+                    })
+            }).catch(() => {
+                this.$message({
+                type: 'info',
+                message: 'Delete canceled'});
+            });
+        },
         handleSelect(key, keyPath) {
             console.log(key, keyPath);
         },

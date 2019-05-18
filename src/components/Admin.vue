@@ -34,11 +34,13 @@
                                         {{event.message}}
                                     </div>
                                 </el-col>
+                            <!---
                             <el-col :span="6">
                                 <div class="button" >
                                     <el-button  size="small" type="danger">Cancel</el-button>
                                 </div>
-                            </el-col>    
+                            </el-col>  
+                            -->  
                             </el-row>
                     </div>
                 </template>

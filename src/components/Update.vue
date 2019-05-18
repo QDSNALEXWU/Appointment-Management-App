@@ -1,6 +1,7 @@
 <template lang="html">
-  <div>
-    <el-form :model="registerValidateForm" ref="registerValidateForm">
+  <div class="">
+    <el-col :span="14" :offset="5">
+        <el-form :model="registerValidateForm" ref="registerValidateForm">
         <!-- Name -->
         <el-form-item prop="Name">
             <el-col :span="11">
@@ -77,21 +78,19 @@
                 v-model="registerValidateForm.checkPass">    
             </el-input>
           </el-form-item>
-          <el-button type="primary" @click="submitForm('registerValidateForm')">Sign up</el-button>
-          <el-button type="danger" @click="resetForm('registerValidateForm')">Reset</el-button>
+          <el-button type="primary" @click="submitForm('registerValidateForm')">Update</el-button>
+          <el-button @click="resetForm('registerValidateForm')">Reset</el-button>
     </el-form>
+    </el-col>
   </div>
 </template>
-·
 <script>
 import * as types from '../store/types'
 import api from '../axios'
 export default {
-    name: 'login',
+    name: 'hello',
     data() {
-        // passward requirments
         let validatePass1 = (rule, value, callback) => {
-            // 6-16 digits, at least two out of digits, letters and special chars, no space
             let reg = /(?!^[0-9]+$)(?!^[A-z]+$)(?!^[^A-z0-9]+$)^[^\s\u4e00-\u9fa5]{6,16}$/;
             if (!reg.test(value)) {
                 callback(new Error('6-16 character limits，needs to contain digits, letters and special characters'))
@@ -99,7 +98,6 @@ export default {
                 callback()
             }
         };
-        // check if passwords are identical 
         let validatePass2 = (rule, value, callback) => {
             value === '' ? callback(new Error('Please confirm your password')) :
                 value !== this.registerValidateForm.password ? callback(new Error('Inconsistent password !')) :
@@ -174,6 +172,18 @@ export default {
             }
         }
     },
+    props: {
+        user:Object
+    },
+    mounted: function () {
+        if(this.user) {
+            this.registerValidateForm.email = this.user.email;
+            this.registerValidateForm.number = this.user.number;
+            this.registerValidateForm.address = this.user.address;
+            this.registerValidateForm.firstName = this.user.first_name;
+            this.registerValidateForm.lastName = this.user.last_name;
+        }
+    },
     methods: {
         resetForm(formName) {
             this.$refs[formName].resetFields();
@@ -182,28 +192,27 @@ export default {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
                     let opt = this.registerValidateForm;
-                    api.userRegister(opt).then(({
+                    
+                    /*api.userRegister(opt).then(({
                         data
                     }) => {
                         if (data.success) {
                             this.$message({
                                 type: 'success',
-                                message: `Register success，Please log in`
+                                message: `注册成功，请登录`
                             })
-                            //  go to login page
-                            setTimeout(() =>{ 
-                                this.$router.go(0)
-                                this.$router.push('/login') 
-                            }, 1000);
+                            //  Register 设计为了 Login 的组件，所以成功跳转时刷新一次页面
+                            this.$router.go(0)
+                            this.$router.push('/login')
                         } else {
                             this.$message({
-                                type: 'warning',
-                                message: 'Account already registered'
+                                type: 'info',
+                                message: '此账户已存在'
                             })
                         }
                     }).catch((err) => {
                         console.log(err);
-                    })
+                    })*/
                 } else {
                     console.log('Error Submit!!');
                     return false;
@@ -215,5 +224,13 @@ export default {
 </script>
 
 <style lang="css">
+
+.select {
+    width: 100%;
+}
+
+.timepicker {
+    display: inline-block;
+}
 
 </style>

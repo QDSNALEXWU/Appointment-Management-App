@@ -1,54 +1,78 @@
 <template lang="html">
   <div class="">
     <el-col :span="14" :offset="5">
+    <!-- FORM  --> 
     <el-form :model="registerValidateForm" ref="registerValidateForm">
-          <!-- Name -->
-          <el-form-item
-            prop="Name"
-          >
-            <el-col :span="11">
-                <el-input
-                placeholder="First Name"
+          
+        <!-- *********** A Name *************** -->
+        <el-form-item
+        >   
+        <el-col :span="11">
+                <el-form-item
+                    prop="firstName"
+                    :rules="rules.firstName"
                 >   
-                </el-input>
+                    <el-input
+                        v-model="registerValidateForm.firstName" 
+                        placeholder="First Name"
+                    >   
+                    </el-input>
+                </el-form-item> 
+        </el-col>
+        <el-col :span="11" :offset="2">
+                <el-form-item
+                    prop="lastName"
+                    :rules="rules.lastName">  
+                    <el-input
+                    v-model="registerValidateForm.lastName" 
+                    placeholder="Last Name">   
+                    </el-input>
+                </el-form-item> 
+        </el-col>
+        </el-form-item> 
+        
+        <!-- *********** Professional Type Name & Hourly Rate ***********-->
+        <el-form-item>
+            <el-col :span="11">
+                <el-form-item
+                    prop="professionalType"
+                    :rules="rules.professionalType">
+                    <el-select class="select" 
+                        v-model="registerValidateForm.professionalType" 
+                        placeholder="Professional type">
+                        <el-option label="Podiatrist" value="podiatrist"></el-option>
+                        <el-option label="Naturopath" value="naturopath"></el-option>
+                        <el-option label="Chiropractor " value="chiropractor "></el-option>
+                    </el-select>
+                </el-form-item>
             </el-col>
             <el-col :span="11" :offset="2">
-                <el-input
-                placeholder="Last Name"
-                >   
-                </el-input>
+                <el-form-item
+                    prop="charge"
+                    :rules="rules.charge"
+                >
+                    <el-input
+                    v-model.number="registerValidateForm.charge" 
+                    placeholder="Hourly Rate"
+                    >   
+                    </el-input>
+                </el-form-item>
             </el-col>
-          </el-form-item>
-          <!-- Professional Type Name-->
-          <el-form-item
-            prop=""
-          >
-            <el-col :span="11">
-                <el-select class="select" 
-                    v-model="registerValidateForm.type" 
-                    placeholder="Please select professional type">
-                    <el-option label="Podiatrist" value="podiatrist"></el-option>
-                    <el-option label="Naturopath" value="naturopath"></el-option>
-                    <el-option label="Chiropractor " value="chiropractor "></el-option>
-                </el-select>
-            </el-col>
-            <el-col :span="11" :offset="2">
-                <el-input
-                placeholder="Hourly Rate"
-                >   
-                </el-input>
-            </el-col>
-          </el-form-item>
-          <el-form-item
-            prop=""
-          >
+        </el-form-item>
+
+        <!-- *********** Email Address *********** -->
+        <el-form-item
+            prop="email"
+            :rules="rules.email">
           <el-input
+             v-model="registerValidateForm.email" 
             placeholder="Email Address"
             >   
             </el-input>
-          </el-form-item>
-          <el-button type="primary" @click="submitForm('registerValidateForm')">Submit</el-button>
-          <el-button @click="resetForm('registerValidateForm')">Reset</el-button>
+        </el-form-item>
+
+        <el-button type="primary" @click="submitForm('registerValidateForm')">Submit</el-button>
+        <el-button @click="resetForm('registerValidateForm')">Reset</el-button>
     </el-form>
     </el-col>
   </div>
@@ -59,66 +83,48 @@ import api from '../axios'
 export default {
     name: 'hello',
     data() {
-        // 密码安全性要求
-        let validatePass1 = (rule, value, callback) => {
-            // 6-16位, 数字, 字母, 字符至少包含两种, 同时不能包含中文和空格
-            let reg = /(?!^[0-9]+$)(?!^[A-z]+$)(?!^[^A-z0-9]+$)^[^\s\u4e00-\u9fa5]{6,16}$/;
-            if (!reg.test(value)) {
-                callback(new Error('密码长度需6-16位，且包含字母和字符'))
-            } else {
-                callback()
-            }
-        };
-        // 监测两次密码是否相同
-        let validatePass2 = (rule, value, callback) => {
-            value === '' ? callback(new Error('请再次输入密码')) :
-                value !== this.registerValidateForm.password ? callback(new Error('两次输入密码不一致!')) :
-                callback()
-        };
         return {
             registerValidateForm: {
                 email: '',
-                password: '',
-                checkPass: '',
-                first: 'first',
-                type:'',
-                name: '',
-                date: '',
-                startTime: '',
-                endTime:'',
-                message:'',
+                firstName: '',
+                lastName:'',
+                charge: '',
+                professionalType: '',
             },
             rules: {
                 email: [{
                         required: true,
-                        message: '请输入邮箱地址',
+                        message: 'Please enter email address',
                         trigger: 'blur'
                     },
                     {
                         type: 'email',
-                        message: '请输入正确的邮箱地址',
-                        trigger: 'blur'
+                        message: 'Please enter a valid email address',
+                        trigger: 'change'
                     }
                 ],
-                password: [{
+                firstName: [{
                         required: true,
-                        message: '请输入密码',
+                        message: 'Please enter your first name',
                         trigger: 'blur'
                     },
-                    {
-                        validator: validatePass1,
-                        trigger: 'blur'
-                    }
                 ],
-                checkPass: [{
+                lastName: [{
                         required: true,
-                        message: '请再次输入密码',
+                        message: 'Please enter your last name',
                         trigger: 'blur'
                     },
-                    {
-                        validator: validatePass2,
-                        trigger: 'blur'
-                    }
+                ],
+                professionalType: [{
+                        required: true,
+                        message: 'Please select professional type',
+                        trigger: 'change'
+                    },
+                ],
+                charge: [{
+                        type: 'number',
+                        message: 'Rate must be a number',
+                    },
                 ]
             }
         }
@@ -131,23 +137,25 @@ export default {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
                     let opt = this.registerValidateForm;
-                    api.userRegister(opt).then(({
+                    api.addPro(opt).then(({
                         data
                     }) => {
+                        console.log(data)
+                        
                         if (data.success) {
                             this.$message({
                                 type: 'success',
-                                message: `注册成功，请登录`
+                                message: `Add Professional Successfuly`
                             })
-                            //  Register 设计为了 Login 的组件，所以成功跳转时刷新一次页面
-                            this.$router.go(0)
-                            this.$router.push('/login')
+                            //this.$router.go(0)
+                            //this.$router.push('/login')
                         } else {
                             this.$message({
-                                type: 'info',
-                                message: '此账户已存在'
+                                type: 'warning',
+                                message: 'Professional already exists'
                             })
                         }
+
                     }).catch((err) => {
                         console.log(err);
                     })

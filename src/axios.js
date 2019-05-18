@@ -28,20 +28,40 @@ instance.interceptors.response.use(response => {
 })
 
 export default {
-	// 用户注册
+	// user register
 	userRegister(data) {
 		return instance.post('/api/register', data)
 	},
-	// 用户登录
+	// user login
 	UserLogin(data) {
 		return instance.post('/api/login', data)
 	},
-	// 获取用户
+	// get user
 	getUser() {
 		return instance.get('/api/user')
 	},
-	// 删除用户
+	// delter user
 	delUser(data) {
 		return instance.post('/api/delUser', data)
-	}
+	},
+	// add professional
+	addPro(data) {
+		return instance.post('/api/professional', data)
+	},
+	// get all professionals
+	getPros() {
+		return instance.get('/api/professional')
+	},
+	// add a appointment 
+	addApp(data) {
+		return instance.post('/api/appointments',data)
+	},
+	// add a appointment 
+	getApps() {
+		return instance.get('/api/appointments')
+	},
+	// del a appointment
+	delApp(data) {
+		return instance.post('/api/delApps',data)
+	},
 }

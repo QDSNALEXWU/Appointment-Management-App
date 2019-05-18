@@ -1,8 +1,9 @@
 <template lang="html">
-  <div class="">
+  <div>
+    <div class="bg"></div>
     <el-row>
       <el-col :span="5" :offset="10">
-        <el-card shadow="always">
+        <el-card shadow="always" class="window">
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <el-tab-pane label="Log in" name="first">
             <el-col>
@@ -27,7 +28,7 @@
                       </el-input>
                     </el-form-item>
                     <el-button type="primary" @click="submitForm('dynamicValidateForm')">Log in</el-button>
-                    <el-button @click="resetForm('dynamicValidateForm')">Reset</el-button>
+                    <el-button type="danger" @click="resetForm('dynamicValidateForm')">Reset</el-button>
               </el-form>
             </el-col>
           </el-tab-pane>
@@ -80,11 +81,11 @@ export default {
     },
     methods: {
         handleClick(tab, event) {},
-        // 重置
+        // reset
         resetForm(formName) {
             this.$refs[formName].resetFields();
         },
-        // 登录
+        // login
         submitForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
@@ -96,13 +97,13 @@ export default {
                         if (!data.info) {
                             this.$message({
                                 type: 'info',
-                                message: '账号不存在'
+                                message: 'Account Not Registered'
                             })
                         }
                         if (data.success) {
                             this.$message({
                                 type: 'success',
-                                message: '登录成功'
+                                message: 'Login Success'
                             })
                             this.$store.dispatch('UserLogin', data.token)
                             this.$store.dispatch('UserName', data.email)
@@ -112,8 +113,8 @@ export default {
                             })
                         } else {
                             this.$message({
-                                type: 'info',
-                                message: '密码错误'
+                                type: 'warning',
+                                message: 'Wrong Password or Email'
                             })
                         }
                     })
@@ -128,7 +129,27 @@ export default {
 </script>
 
 <style lang="scss">
-.el-col {
-    // margin-bottom:
+.bg {
+    background-color: yellow;
+    width: 108vw;
+    height: 108vh;
+    position: absolute;
+    top: -4vh;
+    left: -4vw;
+    background-image: url("../assets/bg.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    filter: blur(20px);
 }
+
+.window{
+    background-color: rgba(0,0,0, 0.4); /* Black w/opacity/see-through */
+}
+
+.window input[type]{
+    background-color: rgba(0,0,0, 0.4);
+    color:#CCCDCD;
+}
+
 </style>

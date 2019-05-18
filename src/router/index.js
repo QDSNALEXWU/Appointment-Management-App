@@ -13,8 +13,8 @@ const router = new Router({
 					resolve(require('@/components/User.vue'));
 				});
 			},
-			// can only access after authentication
-			/*meta: {
+			/*
+			meta: {
 				requireAuth: true
 			}*/
 		},
@@ -49,6 +49,7 @@ const router = new Router({
 				});
 			}
 		},
+		/*
 		{
 			path: '/schedule',
 			name: 'schedule',
@@ -57,8 +58,8 @@ const router = new Router({
 					resolve(require('@/components/Schedule.vue'));
 				});
 			}
-		},
-		// 简单设置404页面
+		},*/
+		// 404 page
 		{
 			path: '*',
 			component(resolve) {

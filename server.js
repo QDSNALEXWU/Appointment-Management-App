@@ -4,7 +4,7 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const favicon = require('serve-favicon')
 const logger = require('morgan')
-const routes = require('./server/routes/user.js')
+const routes = require('./server/routes/routes.js')
 const config = require('config-lite')
 const compression = require('compression')
 const app = express()
@@ -15,6 +15,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+// no cache
+// app.disable('etag');
 app.use(compression({ threshold: 0 }))
 app.use('/api', routes)
 
