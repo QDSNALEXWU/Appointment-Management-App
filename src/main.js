@@ -10,10 +10,25 @@ import vueEventCalendar from 'vue-event-calendar'
 import axios from './axios'
 import store from './store/index.js'
 import moment from 'moment'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { 
+	faUser, 
+	faUserTie, 
+	faCalendar,
+	faBook
+} from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 Vue.use(ElementUI)
 
 Vue.use(vueEventCalendar, {locale: 'en'})
+
+library.add(faUser)
+library.add(faUserTie)
+library.add(faCalendar)
+library.add(faBook)
+
+Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.filter('formatDate', function(value) {
   if (value) {

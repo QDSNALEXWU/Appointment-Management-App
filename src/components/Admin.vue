@@ -1,53 +1,86 @@
 <template scope='scope'>
 <div class="hello">
     <!--      Mutil Function Menu           -->
+    <div class="bg"></div>
     <el-col :span="14" :offset="5">
         <el-tabs type="border-card">
             <!--      Calendar          -->
             <el-tab-pane>
-                <span slot="label">Appointments Requests</span>
+                <span slot="label"><font-awesome-icon icon="calendar"/> Dashboard</span>
                  <vue-event-calendar
-                    :title="title"
-                    :events="demoEvents">
+                    :events="appointments">
                     <template slot-scope="props">
                     <div v-for="(event, index) in props.showEvents" class="event-item">
-                        <el-row class='title'>
-                            <el-col :span="6">
+                        <!--
+                        <el-col :span="6">
                                 <div class="highlight">
-                                    {{event.name}}
-                                </div>
-                            </el-col>
-                        <el-col :offset='6' :span="6">
-                            <div class="light">
-                                {{event.date}}
-                            </div>
-                        </el-col>
-                            <el-col :span="6">
-                                <div class="light">
-                                    {{event.time}}
+                                    {{event.Professional[0].first_name}}
+                                    {{event.Professional[0].last_name}}
                                 </div>
                         </el-col>
-                        </el-row>
-                            <el-row class='content'>
+                        -->
+                            <el-row style="margin-top:5px" >
+                                <el-col :span="6">
+                                    <div class="light">
+                                    {{event.date | formatDate }}
+                                    </div>
+                                </el-col>
+                                <el-col :span="6">
+                                    <div class="light">
+                                        {{event.start_time}}:00-{{event.end_time}}:00
+                                    </div>
+                                </el-col>
+                            </el-row>
+                            <el-row class='title' >
+                                <el-col :span="12">
+                                    <el-popover
+                                    placement="left-start"
+                                    title="Professional Information"
+                                    width="200"
+                                    trigger="hover"
+                                    :content=professionalString(event.Professional[0])>
+                                        <div slot="reference" class="highlight">
+                                            <font-awesome-icon 
+                                            style="color:#8b9099"
+                                            icon="user-tie" />
+                                            {{event.Professional[0].first_name}}
+                                            {{event.Professional[0].last_name}}
+                                        </div>
+                                    </el-popover>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-popover
+                                    placement="right-start"
+                                    title="Customer Information"
+                                    width="200"
+                                    trigger="hover"
+                                    :content=customerString(event.User[0])>
+                                    <div slot="reference" class="highlight">
+                                        <font-awesome-icon 
+                                        style="color:#7aa9f4"
+                                        icon="user" />
+                                        {{event.User[0].first_name}}
+                                        {{event.User[0].last_name}}
+                                    </div>
+                                  </el-popover>
+                                </el-col>
+                            </el-row>
+                        <el-row class='content'>
                                 <el-col :span="18">
                                     <div class="message">
                                         {{event.message}}
                                     </div>
                                 </el-col>
-                            <!---
-                            <el-col :span="6">
-                                <div class="button" >
-                                    <el-button  size="small" type="danger">Cancel</el-button>
-                                </div>
-                            </el-col>  
-                            -->  
-                            </el-row>
+                        </el-row>
                     </div>
                 </template>
                 </vue-event-calendar>
             <!--      Schedule    -->
             </el-tab-pane>
             <el-tab-pane label="Add Health-Care Professional">
+                 <span slot="label">
+                    <i class="el-icon-edit"></i> New Professional
+                </span>
                 <Professional></Professional>
             </el-tab-pane>
         </el-tabs>
@@ -76,94 +109,72 @@
 import * as types from '../store/types'
 import api from '../axios'
 import Professional from '@/components/Professional.vue'
+import moment from 'moment'
 export default {
     name: 'hello',
     data() {
         return {
-            msg: 'Welcome to Vue-login',
             user: '',
             username: '',
-            title: "All Appointments",
-            activeIndex: '1',
-            demoEvents: [{
-                date: '2016/11/12', // Required
-                time: "10-12am",
-                name: 'Tom',
-                type: 'podiatrist',
-                charge:'$30', 
-                message:'see you tmr',
-            }, {
-                date: '2016/11/15', // Required
-                time: "12-1pm",
-                name: 'Jake',
-                type: 'podiatrist',
-                charge:'$30', 
-                message:'I will be there a little bit late',
-            }]
+            appointments:[],
         }
     },
     mounted() {
-        this.get_User()
-        this.username = localStorage.getItem('username')
+        api.getApps().then(({data}) => {
+            // load appointments data
+            this.appointments = data
+            this.appointments.forEach(element => {
+                element.date = moment(element.date).format('YYYY/MM/DD')
+                element.title = ""
+            });
+        }).catch((err) => {
+            console.log(err);
+        })
+    },
+    beforeDestroy: function(){
+        console.log('DESTROYYYY!!!')
     },
     components: {
         Professional
     },
     methods: {
-        handleSelect(key, keyPath) {
-            console.log(key, keyPath);
-        },
-        get_User() {
-            setTimeout(() => {
-                api.getUser().then(({
-                    data
-                }) => {
-                    if (data.code == 401) {
-                        console.log('token')
-                        this.$router.push('/login')
-                        this.$store.dispatch('UserLogout')
-                        console.log(localStorage.token)
-                    } else {
-                        this.user = data
-                    }
-                })
-            }, 100)
-        },
-        logout() {
+        handler(event) {
             this.$store.dispatch('UserLogout')
-            if (!this.$store.state.token) {
-                this.$router.push('/login')
-                this.$message({
-                    type: 'success',
-                    message: '登出成功'
-                })
-            } else {
-                this.$message({
-                    type: 'info',
-                    message: '登出失败'
-                })
-            }
         },
-        del_user(id) {
-            let opt = {
-                id: this.user[id]._id
-            };
-            api.delUser(opt).then(response => {
-                console.log(response)
-                this.$message({
-                    type: 'success',
-                    message: '删除成功'
-                })
-                this.get_User()
-            }).catch((err) => {
-                console.log(err);
-            })
-        }
+        professionalString(Professional) {
+            return "Email: " + Professional.email + "\n" 
+            + "Type: " +  Professional.type + "\n"
+            + "Charge: $" + Professional.charge +"\n"
+        },
+        customerString(Customer){
+            return "Email: " + Customer.email + "\n"
+            + "Number: " + Customer.number
+        },
     }
 }
 </script>
 
 <style scoped>
+
+.bg {
+    background-color: yellow;
+    width: 108vw;
+    height: 108vh;
+    position: absolute;
+    top: -4vh;
+    left: -4vw;
+    background-image: url("../assets/bg.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: -1;
+    filter: blur(10px);
+}
+
+.window{
+    background-color: rgba(255,255,255); /* Black w/opacity/see-through */
+}
+
 h1,
 h2 {
     font-weight: normal;
@@ -206,10 +217,6 @@ a {
 .light{
     color: #a5a7aa;
     font-size: 13px;
-}
-
-.highlight{
-
 }
 
 .message{

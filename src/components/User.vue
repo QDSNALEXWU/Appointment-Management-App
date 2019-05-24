@@ -1,26 +1,36 @@
 <template scope='scope'>
 <div class="hello">
     <!--      Mutil Function Menu           -->
+    <div class="bg"></div>
     <el-col :span="14" :offset="5">
-        <el-tabs type="border-card">
+        <el-tabs class="window" type="border-card">
             <!--      Calendar          -->
-            <el-tab-pane>
-                <span slot="label">Appointments Calendar</span>
+            <el-tab-pane v-loading="loading">
+                <span slot="label"><font-awesome-icon icon="calendar"/> Dashboard</span>
                  <vue-event-calendar
-                    :title="title"
-                    :events="appointments">
+                    :events="appointments"
+                    >
                     <template slot-scope="props">
                     <div v-for="(event, index) in props.showEvents" class="event-item">
                         <el-row class='title'>
                             <el-col :span="6">
-                                <div class="highlight">
-                                   {{event.Professional[0].first_name}}
-                                   {{event.Professional[0].last_name}}
-                                </div>
+                                <el-popover
+                                    placement="right-start"
+                                    title="Professional Information"
+                                    width="200"
+                                    trigger="hover"
+                                    :content=professionalString(event.Professional[0])>
+                                    <div 
+                                        slot="reference" 
+                                        class="highlight">
+                                        {{event.Professional[0].first_name}}
+                                        {{event.Professional[0].last_name}}
+                                    </div>
+                                </el-popover>
                             </el-col>
                         <el-col :offset='6' :span="6">
                             <div class="light">
-                                {{event.date | formatDate }}
+                                {{event.date}}
                             </div>
                         </el-col>
                             <el-col :span="6">
@@ -50,16 +60,20 @@
                 </vue-event-calendar>
             <!--      Schedule    -->
             </el-tab-pane>
-            <el-tab-pane label="Schedule Appointment">
-                <Schedule :user="user[0]">
-                </Schedule>
+            <el-tab-pane >
+                <span slot="label">
+                    <i class="el-icon-edit"></i> Book
+                </span>
+                <Schedule :user="user"></Schedule>
             </el-tab-pane>
             <!--      Update Profile    -->
             <el-tab-pane 
             label="">
-                <span slot="label"><i class="el-icon-setting"></i> Update Profile</span>
-                <Update :user="user[0]">
-                </Update>
+                <span slot="label"><i class="el-icon-setting"></i>
+                </span>
+                <template v-if="userDataLoaded">
+                    <Update :user="user"></Update>
+                 </template>
             </el-tab-pane>
         </el-tabs>
     </el-col>
@@ -81,44 +95,60 @@
 </template>
 
 <script>
-/**
- * @author: weakgoldfish
- */
 import * as types from '../store/types'
 import api from '../axios'
 import Schedule from '@/components/Schedule.vue'
 import Update from '@/components/Update.vue'
+import moment from 'moment'
 export default {
     name: 'hello',
     data() {
         return {
             msg: 'Welcome to Vue-login',
-            user: '',
             username: '',
-            title: "All Appointments",
+            user: {},
+            userDataLoaded:false,
             activeIndex: '1',
             appointments: [],
+            loading: false,
         }
     },
     mounted() {
-        api.getApps().then(({
-            data
-        }) => {
-            // load appointments data
-            this.appointments = data
-        }).catch((err) => {
-            console.log(err);
-        }) 
-        this.get_User()
-        //this.username = localStorage.getItem('username')
+        this.username = localStorage.getItem('username')
+        this.get_User().then(({data}) => {
+            if (data) {
+                this.user = data
+                this.userDataLoaded = true
+                this.get_Apps()
+            }
+        })
     },
     components: {
         Schedule,
         Update
     },
     methods: {
+        get_Apps(){
+            api.getAppsbyUserID(this.user._id).then(({data}) => {
+                // load appointments data
+                this.formatDate(data)
+            }).catch((err) => {
+                console.log(err);
+            })
+        },
+        formatDate(data) {
+            this.appointments = data
+            this.appointments.forEach(element => {
+                element.date = moment(element.date).format('YYYY/MM/DD')
+                element.title = ""
+            });
+        },
+        /**
+         * Cancel An Appointment
+         * @param  {number} key
+         * @return
+         */
         cancelEvent(key) {
-            console.log(key)
             this.$confirm('This will cancel the appointment. Continue?', 'Warning', {
                 confirmButtonText: 'OK',
                 cancelButtonText: 'Cancel',
@@ -128,6 +158,7 @@ export default {
                 let opt = {
                     id: key._id
                 }
+                this.loading = true
                 api.delApp(opt).then(({
                         data
                     }) => {
@@ -136,17 +167,14 @@ export default {
                                 type: 'success',
                                 message: `Appointment Canceled`
                             })
-                            //  refresh page, go to calander
-                            setTimeout(() =>{ 
-                                this.$router.go(0)
-                                this.$router.push('/') 
-                            }, 1000);
+                            this.get_Apps()
                         } else {
                             this.$message({
                                 type: 'warning',
                                 message: 'system error'
                             })
                         }
+                        this.loading = false
                     }).catch((err) => {
                         console.log(err);
                     })
@@ -156,60 +184,59 @@ export default {
                 message: 'Delete canceled'});
             });
         },
-        handleSelect(key, keyPath) {
-            console.log(key, keyPath);
-        },
+        /**
+         * [get_User data]
+         * @return
+         */
         get_User() {
-            setTimeout(() => {
-                api.getUser().then(({
-                    data
-                }) => {
-                    if (data.code == 401) {
-                        console.log('token')
-                        this.$router.push('/login')
-                        this.$store.dispatch('UserLogout')
-                        console.log(localStorage.token)
-                    } else {
-                        this.user = data
-                    }
-                })
-            }, 100)
+            return api.getUserByEmail(this.username)
         },
-        logout() {
-            this.$store.dispatch('UserLogout')
-            if (!this.$store.state.token) {
-                this.$router.push('/login')
-                this.$message({
-                    type: 'success',
-                    message: '登出成功'
-                })
-            } else {
-                this.$message({
-                    type: 'info',
-                    message: '登出失败'
-                })
-            }
+        professionalString(Professional) {
+            return "Email: " + Professional.email + "\n" 
+            + "Type: " +  Professional.type + "\n" 
+            + "Charge: $" + Professional.charge +"/h"
         },
-        del_user(id) {
-            let opt = {
-                id: this.user[id]._id
-            };
-            api.delUser(opt).then(response => {
-                console.log(response)
-                this.$message({
-                    type: 'success',
-                    message: '删除成功'
-                })
-                this.get_User()
-            }).catch((err) => {
-                console.log(err);
-            })
-        }
     }
 }
 </script>
 
+<style>
+.el-tabs__nav {
+    width: 100% !important;
+}
+
+.el-tabs__item {
+    float: left;
+}
+
+.el-tabs__item:nth-child(3) {
+    float: right;
+}
+
+</style>
+
+
 <style scoped>
+
+.bg {
+    background-color: yellow;
+    width: 108vw;
+    height: 108vh;
+    position: absolute;
+    top: -4vh;
+    left: -4vw;
+    background-image: url("../assets/1.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: -1;
+    filter: blur(10px);
+}
+
+.window{
+    background-color: rgba(255,255,255); /* Black w/opacity/see-through */
+}
+
 h1,
 h2 {
     font-weight: normal;
@@ -282,5 +309,4 @@ a {
 .el-menu-item:hover { 
   background-color: white;
 }
-
 </style>

@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 // no cache
-// app.disable('etag');
+app.disable('etag');
 app.use(compression({ threshold: 0 }))
 app.use('/api', routes)
 

@@ -2,8 +2,9 @@
   <div>
     <div class="bg"></div>
     <el-row>
-      <el-col :span="5" :offset="10">
+      <el-col :span="6" :offset="2">
         <el-card shadow="always" class="window">
+        <h1 class="slogan">Welcome To Avengers Health-Care</h1>
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <el-tab-pane label="Log in" name="first">
             <el-col>
@@ -55,7 +56,6 @@ export default {
                 password: ''
             },
             activeName: this.$store.state.activeName,
-            // 输入校验
             rules: {
                 email: [{
                         required: true,
@@ -89,35 +89,42 @@ export default {
         submitForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                    let opt = this.dynamicValidateForm;
-                    api.UserLogin(opt).then(({
-                        data
-                    }) => {
-                        console.log(data)
-                        if (!data.info) {
-                            this.$message({
-                                type: 'info',
-                                message: 'Account Not Registered'
-                            })
-                        }
-                        if (data.success) {
-                            this.$message({
-                                type: 'success',
-                                message: 'Login Success'
-                            })
-                            this.$store.dispatch('UserLogin', data.token)
-                            this.$store.dispatch('UserName', data.email)
-                            let redirect = decodeURIComponent(this.$route.query.redirect || '/');
-                            this.$router.push({
-                                path: redirect
-                            })
-                        } else {
-                            this.$message({
-                                type: 'warning',
-                                message: 'Wrong Password or Email'
-                            })
-                        }
-                    })
+                        let opt = this.dynamicValidateForm
+                        api.UserLogin(opt).then(({
+                            data
+                        }) => {
+                            if (!data.info) {
+                                this.$message({
+                                    type: 'info',
+                                    message: 'Account Not Registered'
+                                })
+                            }
+                            if (data.success) {
+                                if (data.admin) {
+                                    this.$message({
+                                        type: 'success',
+                                        message: `  Welcome to admin dashboard !   `
+                                    })
+                                    this.$router.push('/admin')
+                                } else {
+                                    this.$store.dispatch('UserLogin', data.token)
+                                    this.$store.dispatch('UserName', data.email)
+                                     this.$message({
+                                        type: 'success',
+                                        message: `  Welcome, ${data.firstName}!   `
+                                    })
+                                    let redirect = decodeURIComponent(this.$route.query.redirect || '/user');
+                                    this.$router.push({
+                                        path: redirect
+                                    })
+                                }
+                            } else {
+                                this.$message({
+                                    type: 'warning',
+                                    message: 'Wrong Password or Email'
+                                })
+                            }
+                        })
                 } else {
                     console.log('Error Submit!!');
                     return false;
@@ -128,7 +135,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .bg {
     background-color: yellow;
     width: 108vw;
@@ -136,20 +143,23 @@ export default {
     position: absolute;
     top: -4vh;
     left: -4vw;
-    background-image: url("../assets/bg.png");
+    background-image: url("../assets/4.jpg");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    filter: blur(20px);
 }
 
 .window{
-    background-color: rgba(0,0,0, 0.4); /* Black w/opacity/see-through */
+    background-color: rgba(0,0,0, 0.8); /* Black w/opacity/see-through */
 }
 
 .window input[type]{
     background-color: rgba(0,0,0, 0.4);
     color:#CCCDCD;
+}
+
+.slogan {
+    color: white;
 }
 
 </style>

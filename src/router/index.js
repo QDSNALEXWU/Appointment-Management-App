@@ -6,17 +6,16 @@ Vue.use(Router)
 
 const router = new Router({
 	routes: [{
-			path: '/',
+			path: '/user',
 			name: 'User',
 			component(resolve) {
 				require.ensure(['@/components/User.vue'], () => {
 					resolve(require('@/components/User.vue'));
 				});
 			},
-			/*
 			meta: {
 				requireAuth: true
-			}*/
+			}
 		},
 		{
 			path: '/admin',
@@ -26,13 +25,22 @@ const router = new Router({
 					resolve(require('@/components/Admin.vue'));
 				});
 			},
-			// can only access after authentication
-			/*meta: {
+			/*
+			meta: {
 				requireAuth: true
 			}*/
 		},
 		{
 			path: '/login',
+			name: 'login',
+			component(resolve) {
+				require.ensure(['@/components/Login.vue'], () => {
+					resolve(require('@/components/Login.vue'));
+				});
+			}
+		},
+		{
+			path: '/',
 			name: 'login',
 			component(resolve) {
 				require.ensure(['@/components/Login.vue'], () => {

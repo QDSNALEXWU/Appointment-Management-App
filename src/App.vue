@@ -1,6 +1,8 @@
 <template>
 <div id="app">
-    <img src="./assets/logo.png" class="logo">
+    <div class="logo">
+        <!--<img src="./assets/logo.png" >-->
+    </div>
     <router-view></router-view>
 </div>
 </template>
@@ -22,10 +24,13 @@ export default {
 }
 
 .logo {
-    position: relative;
-    width: 8%;
-    margin-left: 40px ; 
-    margin-bottom: 40px;
-    margin-top: -110px;
+    width: 28vw;
+    margin: 0 auto;
 }
+
+.logo img {
+    float: left;
+    width: 8vw;
+}
+
 </style>

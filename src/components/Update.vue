@@ -9,7 +9,8 @@
                     prop="firstName"
                     :rules="rules.firstName">
                     <el-input
-                        v-model="registerValidateForm.firstName"  
+                        v-model="registerValidateForm.firstName"
+                        :disabled="formdisabled"  
                         placeholder="First Name">   
                     </el-input>
                 </el-form-item>
@@ -20,7 +21,8 @@
                     prop="lastName"
                     :rules="rules.lastName">
                     <el-input
-                        v-model="registerValidateForm.lastName" 
+                        v-model="registerValidateForm.lastName"
+                        :disabled="formdisabled"  
                         placeholder="Last Name">   
                     </el-input>
                 </el-form-item>
@@ -33,6 +35,7 @@
             :rules="rules.address">
             <el-input
                 v-model="registerValidateForm.address"
+                :disabled="formdisabled" 
                 placeholder="Home Address">   
             </el-input>
         </el-form-item>
@@ -43,6 +46,7 @@
             :rules="rules.number">
             <el-input
                 v-model="registerValidateForm.number"
+                :disabled="formdisabled" 
                 placeholder="Contact Number">   
             </el-input>
         </el-form-item>
@@ -53,6 +57,7 @@
             :rules="rules.email">
             <el-input
                 placeholder="Email"
+                :disabled="formdisabled" 
                 v-model="registerValidateForm.email">   
             </el-input>
         </el-form-item>
@@ -60,10 +65,12 @@
         <!-- Passward -->
         <el-form-item
           prop="password"
+          v-if="changePassowrd"
           :rules = "rules.password">
             <el-input 
                 type="password"
-                placeholder="Password" 
+                placeholder="New Password"
+                :disabled="formdisabled" 
                 v-model="registerValidateForm.password">
             </el-input>
         </el-form-item>
@@ -71,15 +78,29 @@
         <el-form-item
           prop="checkPass"
           :rules = "rules.checkPass"
+          v-if="changePassowrd"
           >
             <el-input 
                 type="password"
-                placeholder="Confirm Password"
+                placeholder="Confirm New Password"
+                :disabled="formdisabled" 
                 v-model="registerValidateForm.checkPass">    
             </el-input>
           </el-form-item>
-          <el-button type="primary" @click="submitForm('registerValidateForm')">Update</el-button>
-          <el-button @click="resetForm('registerValidateForm')">Reset</el-button>
+          <el-button 
+            type="primary" 
+            @click="submitForm('registerValidateForm')"
+            :disabled="formdisabled"
+            >Submit
+          </el-button>
+          <el-button
+             type="warning"
+            :disabled="formdisabled" 
+            @click="changePass">
+            Change Password
+            </el-button>
+          <el-button type="success" @click="editForm">Edit</el-button>
+          <el-button type="danger" @click="logout">Log out</el-button>
     </el-form>
     </el-col>
   </div>
@@ -113,6 +134,8 @@ export default {
                 address:'',
                 number:''
             },
+            formdisabled: true,
+            changePassowrd: false,
             rules: {
                 email: [{
                         required: true,
@@ -172,53 +195,79 @@ export default {
             }
         }
     },
+    mounted: function () {
+        this.registerValidateForm.email = this.user.email
+        this.registerValidateForm.firstName = this.user.first_name
+        this.registerValidateForm.lastName = this.user.last_name
+        this.registerValidateForm.address = this.user.address
+        this.registerValidateForm.number = this.user.number
+    },
     props: {
         user:Object
     },
-    mounted: function () {
-        if(this.user) {
-            this.registerValidateForm.email = this.user.email;
-            this.registerValidateForm.number = this.user.number;
-            this.registerValidateForm.address = this.user.address;
-            this.registerValidateForm.firstName = this.user.first_name;
-            this.registerValidateForm.lastName = this.user.last_name;
-        }
-    },
     methods: {
-        resetForm(formName) {
-            this.$refs[formName].resetFields();
+        editForm() {
+            this.formdisabled = !this.formdisabled;
+        },
+        changePass() {
+            this.changePassowrd = !this.changePassowrd
         },
         submitForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
                     let opt = this.registerValidateForm;
-                    
-                    /*api.userRegister(opt).then(({
+                    api.updateUser(opt).then(({
                         data
                     }) => {
                         if (data.success) {
                             this.$message({
                                 type: 'success',
-                                message: `注册成功，请登录`
+                                message: `Profile Updated`
                             })
-                            //  Register 设计为了 Login 的组件，所以成功跳转时刷新一次页面
-                            this.$router.go(0)
-                            this.$router.push('/login')
+                            this.formdisabled = true;
+                            //this.$router.go(0)
+                            //this.$router.push('/login')
                         } else {
                             this.$message({
-                                type: 'info',
-                                message: '此账户已存在'
+                                type: 'warning',
+                                message: 'Update Failure'
                             })
                         }
                     }).catch((err) => {
                         console.log(err);
-                    })*/
+                    })
                 } else {
-                    console.log('Error Submit!!');
+                    console.log('Error Submit !!');
                     return false;
                 }
             });
-        }
+        },
+        logout() {
+             this.$confirm('This will log you out. Continue?', 'Warning', {
+                confirmButtonText: 'OK',
+                cancelButtonText: 'Cancel',
+                type: 'warning'
+            }).then(() => {
+                this.$store.dispatch('UserLogout')
+                if (!this.$store.state.token) {
+                    this.$router.push('/login')
+                    this.$message({
+                        type: 'success',
+                        message: `See you next time, ${this.user.first_name}`
+                    })
+                } else {
+                    this.$message({
+                        type: 'warning',
+                        message: 'Log out fail'
+                    })
+                }
+
+            }).catch(() => {
+                this.$message({
+                type: 'info',
+                message: 'Log out canceled'});
+            });
+        },
     }
 }
 </script>

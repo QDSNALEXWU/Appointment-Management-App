@@ -33,14 +33,14 @@ mongod
 
 ## To Do List 
 
-- [ ] Add Health Professional Page ( for admin )
+- [x] Add Health Professional Page ( for admin )
 
   	- Type [ podiatrist, naturopath, chiropractor ]
   	- Name
   	- Email
   	- Charge ( for one hour consulation )
 
-- [ ] Customer Registeration Page
+- [x] Customer Registeration Page
 
   - Name 
   - Home address
@@ -48,11 +48,11 @@ mongod
   - Email 
   - Password
 
-- [ ] Customer Log in Page 
+- [x] Customer Log in Page 
 
-- [ ] Customer Information Update Page 
+- [x] Customer Information Update Page 
 
-- [ ] Appointment Booking Page
+- [x] Appointment Booking Page
 
   - Type of health Professionals [podiatrist, naturopath, chiropractor 
 
@@ -60,18 +60,18 @@ mongod
   - List of  Avaliable Timeslots ( 9 am - 5 pm, 7 days, unless occupied) 
   - Optional Message 
 
-- [ ] Email Generator to Professionals
+- [x] Email Generator to Professionals
 
   - Name, phone number, email address of the Customer 
   - Date time of the booking 
   - Optional Message 
 
-- [ ] Customer Page 
+- [x] Customer Page 
 
   - View/cancel appoinments - email for appointment cancellation
   - Go to information Update 
 
-- [ ] Admin Page 
+- [x] Admin Page 
 
   - View of all appoinment requests 
   - Go to add professional Page 

@@ -94,7 +94,7 @@ export default {
             // 6-16 digits, at least two out of digits, letters and special chars, no space
             let reg = /(?!^[0-9]+$)(?!^[A-z]+$)(?!^[^A-z0-9]+$)^[^\s\u4e00-\u9fa5]{6,16}$/;
             if (!reg.test(value)) {
-                callback(new Error('6-16 character limits，needs to contain digits, letters and special characters'))
+                callback(new Error('6-16 characters with digits, letters and special characters'))
             } else {
                 callback()
             }

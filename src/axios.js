@@ -20,7 +20,7 @@ instance.interceptors.request.use(config => {
 }, err => {
 	return Promise.reject(err)
 })
-// axios拦截响应
+// axios interception 
 instance.interceptors.response.use(response => {
 	return response
 }, err => {
@@ -39,6 +39,14 @@ export default {
 	// get user
 	getUser() {
 		return instance.get('/api/user')
+	},
+	// get user
+	updateUser(data) {
+		return instance.post('/api/update', data)
+	},
+	// get user by email
+	getUserByEmail(email) {
+		return instance.get('/api/user/' + email)
 	},
 	// delter user
 	delUser(data) {
@@ -59,6 +67,13 @@ export default {
 	// add a appointment 
 	getApps() {
 		return instance.get('/api/appointments')
+	},
+	getAppsTime(data) {
+		return instance.post('/api/appointmentsTime', data)
+	},
+	// add a appointment 
+	getAppsbyUserID(UID) {
+		return instance.get('/api/appointments/' + UID)
 	},
 	// del a appointment
 	delApp(data) {
