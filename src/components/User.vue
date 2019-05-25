@@ -12,7 +12,7 @@
                     >
                     <template slot-scope="props">
                     <div v-for="(event, index) in props.showEvents" class="event-item">
-                        <el-row class='title'>
+                        <el-row style="height:auto" class='title'>
                             <el-col :span="6">
                                 <el-popover
                                     placement="right-start"
@@ -274,6 +274,7 @@ a {
 
 .title{
     border-bottom: 10px solid grey;
+    height: auto;
 }
 
 .light{

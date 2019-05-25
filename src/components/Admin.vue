@@ -31,7 +31,7 @@
                                     </div>
                                 </el-col>
                             </el-row>
-                            <el-row class='title' >
+                            <el-row style="height:auto" class='title' >
                                 <el-col :span="12">
                                     <el-popover
                                     placement="left-start"
@@ -213,6 +213,7 @@ a {
 .title{
     border-bottom: 10px solid grey;
 }
+
 
 .light{
     color: #a5a7aa;

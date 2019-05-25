@@ -380,8 +380,8 @@ export default {
                                     })
                                     //  refresh page, go to calander
                                     setTimeout(() =>{ 
+                                        this.$router.push('/user')
                                         this.$router.go(0)
-                                        this.$router.push('/user') 
                                     }, 1000);
                                 } else {
                                     this.$message({
