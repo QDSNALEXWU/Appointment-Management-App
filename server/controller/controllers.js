@@ -90,7 +90,7 @@ const Login = (req, res) => {
 				time: moment(objectIdToTimestamp(doc._id))
 					.format('YYYY-MM-DD HH:mm:ss'),
 				token: createToken(name),
-				admin: name == 'admin@avgeners.healthcare.com'
+				admin: name == 'admin@avengers.healthcare.com'
 			})
 		} else {
 			res.json({
@@ -106,7 +106,6 @@ const Update = (req, res) => {
 	var query = {"email": req.body.email};
 	var update = {
 		email: req.body.email,
-		password: sha1(req.body.password),
 		first_name: req.body.firstName,
 		last_name: req.body.lastName,
 		address: req.body.address,
@@ -114,7 +113,7 @@ const Update = (req, res) => {
 		token: createToken(this.email)
 	}
 	if (req.body.password) {
-		update.password = req.body.password
+		update.password = sha1(req.body.password)
 	}
 	var options = {new: true};
 	model.User.findOneAndUpdate(query, update, options, function(err, user) {
